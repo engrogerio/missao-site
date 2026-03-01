@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como o Partido Missão vai tratar cada tema? </title>
+  <style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: linear-gradient(
+      to right,
+      black 33.33%,
+      white 33.33%,
+      white 66.66%,
+      #fcbe26 66.66%
+    );
+  }
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* LADOS */
+.side {
+  flex: 1; /* ocupa o espaço restante */
+}
+
+.left {
+  background: black;
+}
+
+.right {
+  background: orange;
+}
+
+/* CENTRO */
+.center {
+  width: 800px;        /* largura fixa do branco */
+  background: white;
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  width: 100%;
+  padding: 20px;
+}
+ h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between; /* separa as colunas */
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .item a {
+      margin-right: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #1a73e8;
+    }
+</style>
+<body>
+  <div class="layout">
+    <div class="side left"></div>
+
+    <div class="center">
+      <div class="content">
+        <h1>Como o Partido Missão vai tratar cada tema?</h1>
+        <div class="container" id="linksContainer"></div>
+      </div>
+    </div>
+
+    <div class="side right"></div>
+  </div>
+    <script>
+    fetch("temas.json")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Erro ao carregar o JSON");
+        }
+        return response.json();
+      })
+      .then(data => {
+        const container = document.getElementById("linksContainer");
+
+  // 🔥 Pega as chaves e ordena
+  const temasOrdenados = Object.keys(data).sort((a, b) =>
+    a.localeCompare(b, 'pt-BR')
+  );
+
+  temasOrdenados.forEach(tema => {
+    const url = data[tema];
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    const label = document.createElement("span");
+    label.textContent = tema;
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.textContent = "link";
+
+    div.appendChild(label);
+    div.appendChild(link);
+
+    container.appendChild(div);
+  });
+})
+      .catch(error => {
+        console.error("Erro:", error);
+      });
+  </script>
+</body>
+</html>
