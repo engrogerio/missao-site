@@ -1,10 +1,40 @@
 
 resource "aws_s3_bucket" "website" {
-  bucket = "${var.domain_name}"
+  bucket = var.bucket_name
   force_destroy = true
 }
 
-# Configure S3 bucket ownership controls
+resource "aws_s3_object" "object" {
+  # Use fileset to enumerate all files in the local directory (including subdirectories with "**")
+  for_each = fileset("static-website-files/", "**")
+  
+  bucket = aws_s3_bucket.website.id
+  # Set the S3 object key to be the same as the file path relative to the source directory
+  key    = each.value
+  # Specify the source file path
+  source = "static-website-files/${each.value}"
+  
+  # Set the ETag to trigger an update only if the file changes
+  etag = filemd5("static-website-files/${each.value}")
+  
+  # Optional: Automatically set the Content-Type based on the file extension
+  content_type = lookup(local.mime_types, regex("\\.([^.]+)$", each.value)[0], "application/octet-stream")
+}
+
+# 4. Define local variable for common MIME types (for content_type)
+locals {
+  mime_types = {
+    "html" = "text/html"
+    "css"  = "text/css"
+    "js"   = "application/javascript"
+    "json" = "application/json"
+    "jpg"  = "image/jpeg"
+    "png"  = "image/png"
+    "gif"  = "image/gif"
+    "svg"  = "image/svg+xml"
+  }
+}
+
 resource "aws_s3_bucket_ownership_controls" "website_bucket" {
   bucket = aws_s3_bucket.website.id
   rule {
