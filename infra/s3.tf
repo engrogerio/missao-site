@@ -89,13 +89,14 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = aws_acm_certificate.cert.arn
+    acm_certificate_arn            = data.aws_acm_certificate.cert.arn
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2021"
   }
 
-  aliases = ["${var.subdomain}.${var.domain_name}"]
-
+  #aliases = ["${var.subdomain}.${var.domain_name}"]
+  aliases = ["${var.domain_name}"]
+  
   restrictions {
     geo_restriction {
       restriction_type = "none"

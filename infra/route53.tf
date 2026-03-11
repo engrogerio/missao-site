@@ -10,29 +10,29 @@ data "aws_acm_certificate" "cert" {
   most_recent = true
 }
 
-# DNS validation records for CloudFront certificate
-resource "aws_route53_record" "cloudfront_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
+# # DNS validation records for CloudFront certificate
+# resource "aws_route53_record" "cloudfront_validation" {
+#   for_each = {
+#     for dvo in data.aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+#       name   = dvo.resource_record_name
+#       record = dvo.resource_record_value
+#       type   = dvo.resource_record_type
+#     }
+#   }
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.main.zone_id
-}
+#   allow_overwrite = true
+#   name            = each.value.name
+#   records         = [each.value.record]
+#   ttl             = 60
+#   type            = each.value.type
+#   zone_id         = aws_route53_zone.main.zone_id
+# }
 
-# Certificate validation for CloudFront
-resource "aws_acm_certificate_validation" "cert" {
-  certificate_arn         = aws_acm_certificate.cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cloudfront_validation : record.fqdn]
-}
+# # Certificate validation for CloudFront
+# resource "aws_acm_certificate_validation" "cert" {
+#   certificate_arn         = aws_acm_certificate.cert.arn
+#   validation_record_fqdns = [for record in aws_route53_record.cloudfront_validation : record.fqdn]
+# }
 
 # Route53 record for CloudFront
 resource "aws_route53_record" "cloudfront" {
@@ -47,3 +47,10 @@ resource "aws_route53_record" "cloudfront" {
   }
 }
 
+resource "aws_route53_record" "cloudfront_www" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_cloudfront_distribution.cdn.domain_name]
+}

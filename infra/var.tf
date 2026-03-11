@@ -19,7 +19,7 @@ variable "bucket_name" {
 variable "iam_user_name" {
   description = "iam-user-name"
   type        = string
-  default     = "missao"
+  default     = "missao-deploy-user"
 }
 
 variable "domain_name" {
