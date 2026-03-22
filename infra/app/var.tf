@@ -1,11 +1,9 @@
 variable "aws_region" {
-  description = "region"
   type        = string
   default     = "us-east-1"
 }
 
 variable "aws_profile" {
-  description = "profile"
   type        = string
   default     = "inventsis4"
 }

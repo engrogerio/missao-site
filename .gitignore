@@ -8,6 +8,16 @@ wheels/
 
 # Virtual environments
 .venv
-*.tfstate
 transcription/
+
+# Terraform
 .terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Sensitive files
+terraform.tfvars
+*.tfvars.json
+
+missao
